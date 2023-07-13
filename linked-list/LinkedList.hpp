@@ -2,26 +2,33 @@
 
 // defining here because https://stackoverflow.com/questions/8752837/undefined-reference-to-template-class-constructor
 
-template <typename T>
-struct LinkedListNode
-{
-    T data;  // Data that node stores
-    LinkedListNode *next;  // Pointer to a next node
-};
+// template <typename T>
+// struct LinkedListNode
+// {
+//     T data;  // Data that node stores
+//     LinkedListNode *next;  // Pointer to a next node
+// };
 
 template <typename T>
 class LinkedList
 {
 private:
-    int size;  // Size of the list
-    LinkedListNode<T> *root;  // The root node of a list, its beginning
+    struct LinkedListNode
+    {
+        T data;  // Data that node stores
+        LinkedListNode *next;  // Pointer to a next node
+    };
+
+    int size = 0;  // Size of the list
+    LinkedListNode *root = nullptr;  // The root node of a list, its beginning
 
 public:
     LinkedList();
     LinkedList(std::initializer_list<T> items);
 
-    void push_back(T new_data);  // Adds new data to the end of the list
+    void push_back(T new_data);  // Add new data to the end of the list
     void insert();  // Add new data to specified index
+    void prepend(T new_data);  // Add new data to the beginning of the list
 
     void pop_back();  // Delete last element
 
@@ -33,28 +40,23 @@ public:
 
 // Initializes an empty list
 template <typename T>
-LinkedList<T>::LinkedList()
-{
-    this->root = nullptr;
-    this->size = 0;
-}
+LinkedList<T>::LinkedList() {}
 
 // Initializes a list with some initial values
-// TODO: replace this with backwards iterating over a init list and prepending to the root
 template <typename T>
 LinkedList<T>::LinkedList(std::initializer_list<T> items)
 {
-    this->root = nullptr;
-    this->size = 0;
-    for (T item : items)
-        this->push_back(item);
+    // backwards iterating over a init list and prepending to the beginning
+    // (to not lose time traversing over a list each time we push_back)
+    for (auto it = items.end() - 1, end = items.begin() - 1; it != end; it--)
+        this->prepend(*it);
 }
 
 // Add new data to the end of the list
 template <typename T>
 void LinkedList<T>::push_back(T new_data)
 {
-    LinkedListNode<T> *new_node = new LinkedListNode<T>;
+    LinkedListNode *new_node = new LinkedListNode;
     new_node->data = new_data;
     new_node->next = nullptr;
 
@@ -78,6 +80,17 @@ template <typename T>
 void LinkedList<T>::insert()
 {
 
+}
+
+// Add new data to the beginning of the list
+template <typename T>
+void LinkedList<T>::prepend(T new_data)
+{
+    LinkedListNode *new_node = new LinkedListNode;
+    new_node->data = new_data;
+    new_node->next = this->root;
+    this->root = new_node;
+    this->size++;
 }
 
 // Delete last element
@@ -118,7 +131,7 @@ int LinkedList<T>::get_size()
 template <typename T>
 T LinkedList<T>::operator[](int index)
 {
-    if (index >= this->size)
+    if (index >= this->size || index <= -this->size)
     {
         throw std::invalid_argument("indexing out-of-bounds index with brackets operator");
     }

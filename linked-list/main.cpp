@@ -15,12 +15,11 @@ int main()
     // }
     // std::cout << std::endl;
 
-    std::cout << list[-1] << " is at index -1" << std::endl;
     std::cout << list[-2] << " is at index -2" << std::endl;
     std::cout << list[3] << " is at index 3" << std::endl;
-    std::cout << list[5] << " is at index 5" << std::endl;
 
     list.pop_back();
+    list.prepend(1);
 
     std::cout << "After: ";
     list.print();
