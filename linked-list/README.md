@@ -3,7 +3,6 @@
 A linked list class. Supports indexing with brackets (negative indexing too!), initializer-list initializing, adding and deleting elements, getting size and pretty-printing.
 
 ## TODO
-- Add ability to change values with bracket operator
 - Add iterator(s)
 - Add `insert` method
 - Add double-linked linked list as a subclass?

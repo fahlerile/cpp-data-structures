@@ -21,6 +21,8 @@ int main()
     list.pop_back();
     list.prepend(1);
 
+    list[0] = 92;
+
     std::cout << "After: ";
     list.print();
     std::cout << "Size: " << list.get_size() << std::endl;

@@ -35,7 +35,8 @@ public:
     void print();  // Pretty-print contents of a list
     int get_size();  // Get the size of a list
 
-    T operator[](int index);  // Get data at specific index
+    T operator[](int index) const;  // Get data at specific index
+    T& operator[](int index);  // Set data at specific index
 };
 
 // Initializes an empty list
@@ -129,7 +130,24 @@ int LinkedList<T>::get_size()
 }
 
 template <typename T>
-T LinkedList<T>::operator[](int index)
+T LinkedList<T>::operator[](int index) const
+{
+    if (index >= this->size || index <= -this->size)
+    {
+        throw std::invalid_argument("indexing out-of-bounds index with brackets operator");
+    }
+    if (index < 0)
+    {
+        index = this->size + index;
+    }
+
+    auto *p = this->root;
+    for (int i = 0; i < index; i++, p = p->next);
+    return p->data;
+}
+
+template <typename T>
+T& LinkedList<T>::operator[](int index)
 {
     if (index >= this->size || index <= -this->size)
     {
