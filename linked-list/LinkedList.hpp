@@ -60,7 +60,7 @@ public:
     LinkedList(std::initializer_list<T> items);
 
     void push_back(T new_data);  // Add new data to the end of the list
-    void insert();  // Add new data to specified index
+    void insert(T new_data, int index);  // Add new data to specified index
     void prepend(T new_data);  // Add new data to the beginning of the list
 
     void pop_back();  // Delete last element
@@ -116,11 +116,28 @@ void LinkedList<T>::push_back(T new_data)
 }
 
 // Add new data to specified index
-// TODO: create this
 template <typename T>
-void LinkedList<T>::insert()
+void LinkedList<T>::insert(T new_data, int index)
 {
+    if (index >= this->size || index < 0)
+        throw std::invalid_argument("indexing out-of-bounds index for LinkedList<T>::insert method");
 
+    LinkedListNode *new_node = new LinkedListNode;
+    new_node->data = new_data;
+    this->size++;
+
+    if (index == 0)
+    {
+        new_node->next = this->root->next;
+        this->root = new_node;
+        return;
+    }
+
+    auto *p = this->root;
+    // traverse over a linked list to a node before the one we need to insert
+    for (int i = 0; i < (index - 1); i++, p = p->next);
+    new_node->next = p->next;
+    p->next = new_node;
 }
 
 // Add new data to the beginning of the list
@@ -155,10 +172,8 @@ void LinkedList<T>::print()
     if (this->root == nullptr)
         return;
 
-    for (auto *p = this->root; p != nullptr; p = p->next)
-    {
-        std::cout << p->data << " ";
-    }
+    for (auto item : *this)
+        std::cout << item.data << " ";
     std::cout << std::endl;
 }
 

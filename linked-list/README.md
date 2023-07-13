@@ -4,4 +4,5 @@ A linked list class. Supports indexing with brackets (negative indexing too!), i
 
 ## TODO
 - Add `insert` method
+- Add destructor
 - Add double-linked linked list as a subclass?

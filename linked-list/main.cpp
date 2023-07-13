@@ -9,11 +9,9 @@ int main()
     list.print();
     std::cout << "Size: " << list.get_size() << std::endl;
 
-    for (auto item : list)
-    {
-        std::cout << item.data << " ";
-    }
-    std::cout << std::endl;
+    list.insert(100, 0);
+    list.print();
+    std::cout << "Size: " << list.get_size() << std::endl;
 
     // std::cout << list[-2] << " is at index -2" << std::endl;
     // std::cout << list[3] << " is at index 3" << std::endl;
