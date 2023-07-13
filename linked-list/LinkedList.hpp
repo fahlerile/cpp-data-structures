@@ -58,6 +58,7 @@ public:
 
     LinkedList();
     LinkedList(std::initializer_list<T> items);
+    ~LinkedList();
 
     void push_back(T new_data);  // Add new data to the end of the list
     void insert(T new_data, int index);  // Add new data to specified index
@@ -91,6 +92,18 @@ LinkedList<T>::LinkedList(std::initializer_list<T> items)
     // (to not lose time traversing over a list each time we push_back)
     for (auto it = items.end() - 1, end = items.begin() - 1; it != end; it--)
         this->prepend(*it);
+}
+
+template <typename T>
+LinkedList<T>::~LinkedList()
+{
+    auto *tmp = this->root;
+
+    for (auto *p = this->root; p != nullptr; p = tmp)
+    {
+        tmp = p->next;
+        delete p;
+    }
 }
 
 // Add new data to the end of the list
@@ -128,7 +141,7 @@ void LinkedList<T>::insert(T new_data, int index)
 
     if (index == 0)
     {
-        new_node->next = this->root->next;
+        new_node->next = this->root;
         this->root = new_node;
         return;
     }
