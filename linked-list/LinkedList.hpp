@@ -2,27 +2,60 @@
 
 // defining here because https://stackoverflow.com/questions/8752837/undefined-reference-to-template-class-constructor
 
-// template <typename T>
-// struct LinkedListNode
-// {
-//     T data;  // Data that node stores
-//     LinkedListNode *next;  // Pointer to a next node
-// };
+template <typename LinkedList>
+class LinkedListIterator
+{
+public:
+    using ValueType = typename LinkedList::LinkedListNode;
+    using PointerType = ValueType*;
+    using ReferenceType = ValueType&;
+
+    LinkedListIterator(PointerType ptr) : m_ptr(ptr) {}
+
+    LinkedListIterator& operator++()  // prefix
+    {
+        this->m_ptr = this->m_ptr->next;
+        return *this;
+    }
+
+    LinkedListIterator& operator++(int)  // postfix
+    {
+        LinkedListIterator iterator = *this;
+        ++(*this);
+        return iterator;
+    }
+
+    ReferenceType operator*()
+    {
+        return *(this->m_ptr);
+    }
+
+    bool operator==(const LinkedListIterator& other)
+    {
+        return this->m_ptr == other.m_ptr;
+    }
+
+    bool operator!=(const LinkedListIterator& other)
+    {
+        return this->m_ptr != other.m_ptr;
+    }
+
+private:
+    PointerType m_ptr;
+};
 
 template <typename T>
 class LinkedList
 {
-private:
+public:
+    using Iterator = LinkedListIterator<LinkedList<T>>;
+
     struct LinkedListNode
     {
         T data;  // Data that node stores
         LinkedListNode *next;  // Pointer to a next node
     };
 
-    int size = 0;  // Size of the list
-    LinkedListNode *root = nullptr;  // The root node of a list, its beginning
-
-public:
     LinkedList();
     LinkedList(std::initializer_list<T> items);
 
@@ -37,6 +70,13 @@ public:
 
     T operator[](int index) const;  // Get data at specific index
     T& operator[](int index);  // Set data at specific index
+
+    Iterator begin();
+    Iterator end();
+
+private:
+    int size = 0;  // Size of the list
+    LinkedListNode *root = nullptr;  // The root node of a list, its beginning
 };
 
 // Initializes an empty list
@@ -161,4 +201,16 @@ T& LinkedList<T>::operator[](int index)
     auto *p = this->root;
     for (int i = 0; i < index; i++, p = p->next);
     return p->data;
+}
+
+template <typename T>
+typename LinkedList<T>::Iterator LinkedList<T>::begin()
+{
+    return LinkedListIterator<LinkedList<T>>(this->root);
+}
+
+template <typename T>
+typename LinkedList<T>::Iterator LinkedList<T>::end()
+{
+    return nullptr;  // because this should return the NEXT memory address after the last valid one
 }

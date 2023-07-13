@@ -9,21 +9,21 @@ int main()
     list.print();
     std::cout << "Size: " << list.get_size() << std::endl;
 
-    // for (auto item : list)
-    // {
-    //     std::cout << item << " ";
-    // }
-    // std::cout << std::endl;
+    for (auto item : list)
+    {
+        std::cout << item.data << " ";
+    }
+    std::cout << std::endl;
 
-    std::cout << list[-2] << " is at index -2" << std::endl;
-    std::cout << list[3] << " is at index 3" << std::endl;
+    // std::cout << list[-2] << " is at index -2" << std::endl;
+    // std::cout << list[3] << " is at index 3" << std::endl;
 
-    list.pop_back();
-    list.prepend(1);
+    // list.pop_back();
+    // list.prepend(1);
 
-    list[0] = 92;
+    // list[0] = 92;
 
-    std::cout << "After: ";
-    list.print();
-    std::cout << "Size: " << list.get_size() << std::endl;
+    // std::cout << "After: ";
+    // list.print();
+    // std::cout << "Size: " << list.get_size() << std::endl;
 }
