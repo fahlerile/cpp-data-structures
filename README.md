@@ -6,8 +6,11 @@ My implementations of various data structures in C++ as reusable classes with te
 - (Singly) Linked List
 
 # TODO
-- Doubly Linked List
+- Vector (array)
+- Tree
+- Stack
+- Queue
 - Hash Table
 - Trie
 - Graph
-- Vector (array)
+- Doubly Linked List
