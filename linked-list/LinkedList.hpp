@@ -56,15 +56,20 @@ public:
         LinkedListNode *next;  // Pointer to a next node
     };
 
-    LinkedList();
-    LinkedList(std::initializer_list<T> items);
-    ~LinkedList();
+    LinkedList();  // Initialize an empty list
+    LinkedList(std::initializer_list<T> items);  // Initialize the list with some values
+    ~LinkedList();  // Free the heap allocated memory
 
     void push_back(T new_data);  // Add new data to the end of the list
-    void insert(T new_data, int index);  // Add new data to specified index
     void prepend(T new_data);  // Add new data to the beginning of the list
+    void insert(T new_data, int index);  // Add new data to specified index
 
     void pop_back();  // Delete last element
+    void pop_beginning();  // Delete first element
+    void delete_node(int index);  // Delete node at specified index
+
+    int find(T size);  // Linear search over this linked list
+    void swap(int idx_1, int idx_2);  // Swap data of two nodes
 
     void print();  // Pretty-print contents of a list
     int get_size();  // Get the size of a list
@@ -80,20 +85,21 @@ private:
     LinkedListNode *root = nullptr;  // The root node of a list, its beginning
 };
 
-// Initializes an empty list
+// Initialize an empty list
 template <typename T>
 LinkedList<T>::LinkedList() {}
 
-// Initializes a list with some initial values
+// Initialize the list with some values
 template <typename T>
 LinkedList<T>::LinkedList(std::initializer_list<T> items)
 {
     // backwards iterating over a init list and prepending to the beginning
-    // (to not lose time traversing over a list each time we push_back)
+    // (to not lose time traversing over a list each time we `push_back`)
     for (auto it = items.end() - 1, end = items.begin() - 1; it != end; it--)
         this->prepend(*it);
 }
 
+// Free the heap allocated memory
 template <typename T>
 LinkedList<T>::~LinkedList()
 {
@@ -128,6 +134,17 @@ void LinkedList<T>::push_back(T new_data)
     this->size++;
 }
 
+// Add new data to the beginning of the list
+template <typename T>
+void LinkedList<T>::prepend(T new_data)
+{
+    LinkedListNode *new_node = new LinkedListNode;
+    new_node->data = new_data;
+    new_node->next = this->root;
+    this->root = new_node;
+    this->size++;
+}
+
 // Add new data to specified index
 template <typename T>
 void LinkedList<T>::insert(T new_data, int index)
@@ -153,17 +170,6 @@ void LinkedList<T>::insert(T new_data, int index)
     p->next = new_node;
 }
 
-// Add new data to the beginning of the list
-template <typename T>
-void LinkedList<T>::prepend(T new_data)
-{
-    LinkedListNode *new_node = new LinkedListNode;
-    new_node->data = new_data;
-    new_node->next = this->root;
-    this->root = new_node;
-    this->size++;
-}
-
 // Delete last element
 template <typename T>
 void LinkedList<T>::pop_back()
@@ -176,6 +182,65 @@ void LinkedList<T>::pop_back()
     p->next = nullptr;  // remove the pointer to this freed memory (to last node)
 
     this->size--;
+}
+
+// Delete first element
+template <typename T>
+void LinkedList<T>::pop_beginning()
+{
+    auto *tmp = this->root->next;
+    delete this->root;
+    this->root = tmp;
+    this->size--;
+}
+
+// Delete node at specified index
+template <typename T>
+void LinkedList<T>::delete_node(int index)
+{
+    if (index >= this->size || index < 0)
+        throw std::invalid_argument("indexing out-of-bounds index for LinkedList<T>::delete_node method");
+
+    auto *p = this->root;
+    // traverse until the next node is the one we need to delete
+    for (int i = 0; i < (index - 1); i++, p = p->next);
+    auto *tmp = p->next->next;
+    delete p->next;
+    p->next = tmp;
+    this->size--;
+}
+
+// Linear search over this linked list
+template <typename T>
+int LinkedList<T>::find(T data)
+{
+    auto *p = this->root;
+    for (int i = 0; p->next != nullptr; p = p->next, i++)
+    {
+        if (p->data == data)
+            return i;
+    }
+    return -1;
+}
+
+// Swap data of two nodes
+template <typename T>
+void LinkedList<T>::swap(int idx1, int idx2)
+{
+    if (idx1 == idx2)
+        return;
+
+    // traverse to the node with index `idx1`
+    auto *p1 = this->root;
+    for (int i = 0; i < idx1; i++, p1 = p1->next);
+
+    // traverse to the node with index `idx2`
+    auto *p2 = this->root;
+    for (int i = 0; i < idx2; i++, p2 = p2->next);
+
+    auto tmp = p1->data;
+    p1->data = p2->data;
+    p2->data = tmp;
 }
 
 // Pretty-print contents of a list
@@ -197,6 +262,7 @@ int LinkedList<T>::get_size()
     return this->size;
 }
 
+// Get data at specific index
 template <typename T>
 T LinkedList<T>::operator[](int index) const
 {
@@ -214,6 +280,7 @@ T LinkedList<T>::operator[](int index) const
     return p->data;
 }
 
+// Set data at specific index
 template <typename T>
 T& LinkedList<T>::operator[](int index)
 {
