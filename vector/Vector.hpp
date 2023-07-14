@@ -3,10 +3,27 @@
 // Using `malloc` and `free` instead of `new` and `delete` because I need to use `std::realloc`
 // (valgrind notifies about "free() delete delete[] mismatch")
 
+template <typename Vector>
+class VectorIterator
+{
+public:
+    using ValueType = typename Vector::ValueType;
+    using PointerType = ValueType*;
+    using ReferenceType = ValueType&;
+
+    LinkedListIterator(PointerType ptr) : m_ptr(ptr) {}
+
+private:
+    PointerType m_ptr;
+}
+
 template <typename T>
 class Vector
 {
 public:
+    using ValueType = T;
+    using Iterator = VectorIterator;
+
     Vector();  // Initialize a vector with no elements
     Vector(std::initializer_list<T> items);  // Initialize a vector with some elements in it
     ~Vector();  // Delete a vector, free the memory
@@ -17,6 +34,9 @@ public:
 
     void print();  // Pretty-print a vector
     int get_size();  // Get the size of a vector
+
+    T operator[](int index) const;  // Get data at specific index
+    T& operator[](int index);  // Set data at specific index
 
 private:
     int allocated = 5;  // For how many elements the memory is allocated currently (max `size`)
@@ -80,6 +100,20 @@ template <typename T>
 int Vector<T>::get_size()
 {
     return this->size;
+}
+
+// Get data at specific index
+template <typename T>
+T Vector<T>::operator[](int index) const
+{
+    return this->data[index];
+}
+
+// Set data at specific index
+template <typename T>
+T& Vector<T>::operator[](int index)
+{
+    return this->data[index];
 }
 
 // Reallocate memory if it is not enough

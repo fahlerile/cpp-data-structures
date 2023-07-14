@@ -68,7 +68,7 @@ public:
     void pop_beginning();  // Delete first element
     void delete_node(int index);  // Delete node at specified index
 
-    int find(T size);  // Linear search over this linked list
+    int find(T data);  // Linear search over this linked list
     void swap(int idx_1, int idx_2);  // Swap data of two nodes
 
     void print();  // Pretty-print contents of a list
