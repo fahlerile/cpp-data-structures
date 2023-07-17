@@ -11,18 +11,47 @@ public:
     using PointerType = ValueType*;
     using ReferenceType = ValueType&;
 
-    LinkedListIterator(PointerType ptr) : m_ptr(ptr) {}
+    VectorIterator(PointerType ptr) : m_ptr(ptr) {}
+
+    VectorIterator& operator++()  // prefix
+    {
+        this->m_ptr++;
+        return *this;
+    }
+
+    VectorIterator& operator++(int)  // postfix
+    {
+        VectorIterator iterator = *this;
+        ++(*this);
+        return iterator;
+    }
+
+    ReferenceType operator*()
+    {
+        return *(this->m_ptr);
+    }
+
+    bool operator==(const VectorIterator& other)
+    {
+        return this->m_ptr == other.m_ptr;
+    }
+
+    bool operator!=(const VectorIterator& other)
+    {
+        return this->m_ptr != other.m_ptr;
+    }
+
 
 private:
     PointerType m_ptr;
-}
+};
 
 template <typename T>
 class Vector
 {
 public:
     using ValueType = T;
-    using Iterator = VectorIterator;
+    using Iterator = VectorIterator<Vector<T>>;
 
     Vector();  // Initialize a vector with no elements
     Vector(std::initializer_list<T> items);  // Initialize a vector with some elements in it
@@ -37,6 +66,9 @@ public:
 
     T operator[](int index) const;  // Get data at specific index
     T& operator[](int index);  // Set data at specific index
+
+    Iterator begin();
+    Iterator end();
 
 private:
     int allocated = 5;  // For how many elements the memory is allocated currently (max `size`)
@@ -123,4 +155,16 @@ void Vector<T>::reallocate_memory()
     T *tmp = (T*) std::realloc(this->data, sizeof(T) * (this->size + this->size_increment));
     this->allocated += this->size_increment;
     this->data = tmp;
+}
+
+template <typename T>
+typename Vector<T>::Iterator Vector<T>::begin()
+{
+    return VectorIterator<Vector<T>>(this->data);
+}
+
+template <typename T>
+typename Vector<T>::Iterator Vector<T>::end()
+{
+    return VectorIterator<Vector<T>>(this->data + this->size);
 }
