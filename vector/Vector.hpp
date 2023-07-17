@@ -138,7 +138,28 @@ template <typename T>
 void Vector<T>::pop_back()
 {
     if (this->size <= 0)
-        throw std::length_error("trying to delete last element from the list with size = 0 (Vector::pop_back)");
+        throw std::length_error("trying to delete an element from the list with size = 0 (Vector::pop_back)");
+    this->size--;
+}
+
+// Delete first element
+template <typename T>
+void Vector<T>::pop_beginning()
+{
+    if (this->size <= 0)
+        throw std::length_error("trying to delete an element from the list with size = 0 (Vector::pop_beginning)");
+
+    this->delete_at_index(0);
+}
+
+// Delete element at a specific index
+template <typename T>
+void Vector<T>::delete_at_index(int index)
+{
+    if (this->size <= 0)
+        throw std::length_error("trying to delete an element from the list with size = 0 (Vector::delete_at_index)");
+
+    std::memcpy(&this->data[index], &this->data[index + 1], (this->size - index) * sizeof(T));
     this->size--;
 }
 

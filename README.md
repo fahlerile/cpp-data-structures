@@ -4,9 +4,9 @@ My implementations of various data structures in C++ as reusable classes with te
 
 # Data Structures
 - (Singly) Linked List
+- Vector (dynamic array)
 
 # TODO
-- Vector (dynamic array)
 - Tree
 - Stack
 - Queue
