@@ -6,7 +6,7 @@ My implementations of various data structures in C++ as reusable classes with te
 - (Singly) Linked List
 
 # TODO
-- Vector (array)
+- Vector (dynamic array)
 - Tree
 - Stack
 - Queue

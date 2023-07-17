@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 
 // Using `malloc` and `free` instead of `new` and `delete` because I need to use `std::realloc`
 // (valgrind notifies about "free() delete delete[] mismatch")
@@ -58,8 +59,12 @@ public:
     ~Vector();  // Delete a vector, free the memory
 
     void push_back(T new_data);  // Add new data to the end of element
+    void prepend(T new_data);  // Add new data to the beginning
+    void insert(T new_data, int index);  // Add new data at the specific index
 
     void pop_back();  // Delete a last element
+    void pop_beginning();  // Delete first element
+    void delete_at_index(int index);  // Delete element at a specific index
 
     void print();  // Pretty-print a vector
     int get_size();  // Get the size of a vector
@@ -106,6 +111,25 @@ void Vector<T>::push_back(T new_data)
         this->reallocate_memory();
 
     this->data[this->size] = new_data;
+    this->size++;
+}
+
+// Add new data to the beginning
+template <typename T>
+void Vector<T>::prepend(T new_data)
+{
+    this->insert(new_data, 0);
+}
+
+// Add new data at the specific index
+template <typename T>
+void Vector<T>::insert(T new_data, int index)
+{
+    if (this->size == allocated)
+        this->reallocate_memory();
+
+    std::memcpy(&(this->data[index]) + 1, &this->data[index], (this->size - index) * sizeof(T));
+    this->data[index] = new_data;
     this->size++;
 }
 
