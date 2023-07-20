@@ -1,4 +1,72 @@
 #pragma once
+#include <stack>
+
+template <typename BinarySearchTree>
+class BinarySearchTreeIterator
+{
+public:
+    using ValueType = typename BinarySearchTree::Node;
+    using PointerType = ValueType*;
+    using ReferenceType = ValueType&;
+
+    BinarySearchTreeIterator(PointerType ptr) : m_ptr(ptr) {}
+
+    BinarySearchTreeIterator& operator++()  // prefix
+    {
+        // PRIORITY: LEFT -> RIGHT
+        // the idea is to create a stack in which I am going to save pointers to the nodes I need to visit
+
+        if (this->m_ptr->left != nullptr && this->m_ptr->right != nullptr)
+        {
+            this->visit_stack.push(this->m_ptr->right);
+            this->m_ptr = this->m_ptr->left;
+        }
+        else if (this->m_ptr->left != nullptr && this->m_ptr->right == nullptr)
+        {
+            this->m_ptr = this->m_ptr->left;
+        }
+        else if (this->m_ptr->left == nullptr && this->m_ptr->right != nullptr)
+        {
+            this->m_ptr = this->m_ptr->right;
+        }
+        else if (this->m_ptr->left == nullptr && this->m_ptr->right == nullptr && this->visit_stack.empty())
+        {
+            this->m_ptr = nullptr;
+        }
+        else if (this->m_ptr->left == nullptr && this->m_ptr->right == nullptr)
+        {
+            this->m_ptr = this->visit_stack.top();
+            this->visit_stack.pop();
+        }
+        return *this;
+    }
+
+    BinarySearchTreeIterator& operator++(int)  // postfix
+    {
+        BinarySearchTreeIterator iterator = *this;
+        ++(*this);
+        return iterator;
+    }
+
+    ReferenceType operator*()
+    {
+        return *(this->m_ptr);
+    }
+
+    bool operator==(const BinarySearchTreeIterator& other)
+    {
+        return this->m_ptr == other.m_ptr;
+    }
+
+    bool operator!=(const BinarySearchTreeIterator& other)
+    {
+        return this->m_ptr != other.m_ptr;
+    }
+
+private:
+    PointerType m_ptr;
+    std::stack<PointerType> visit_stack;
+};
 
 // Binary search tree class. Template argument should be a number
 // type (like int or float), or some other class/type with available
@@ -7,6 +75,8 @@ template <typename T>
 class BinarySearchTree
 {
 public:
+    using Iterator = BinarySearchTreeIterator<BinarySearchTree<T>>;
+
     struct Node
     {
         Node *left = nullptr;
@@ -21,9 +91,12 @@ public:
     bool search(T data);  // Search for specific data
     void delete_node(T data);  // Delete a node with specific value
 
+    Iterator begin();
+    Iterator end();
+
 private:
-    void add(T new_data, Node *&parent);
-    Node* search_node_return_pointer(T data, Node *parent);
+    void add(T new_data, Node *&parent);  // Add new data to a specific subtree
+    Node* search_node_return_pointer(T data, Node *parent);  // Search for a node with specific value and return a pointer to it
 
     Node *root = nullptr;
 };
@@ -103,4 +176,16 @@ typename BinarySearchTree<T>::Node* BinarySearchTree<T>::search_node_return_poin
             return nullptr;
         return this->search_node_return_pointer(data, parent->right);
     }
+}
+
+template <typename T>
+typename BinarySearchTree<T>::Iterator BinarySearchTree<T>::begin()
+{
+    return Iterator(this->root);
+}
+
+template <typename T>
+typename BinarySearchTree<T>::Iterator BinarySearchTree<T>::end()
+{
+    return Iterator(nullptr);
 }
