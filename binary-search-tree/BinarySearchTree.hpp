@@ -43,9 +43,9 @@ public:
 
     BinarySearchTreeIterator& operator++(int)  // postfix
     {
-        BinarySearchTreeIterator iterator = *this;
+        this->temp = *this;
         ++(*this);
-        return iterator;
+        return this->temp;
     }
 
     ReferenceType operator*()
@@ -61,6 +61,11 @@ public:
     bool operator!=(const BinarySearchTreeIterator& other)
     {
         return this->m_ptr != other.m_ptr;
+    }
+
+    PointerType get_pointer()
+    {
+        return m_ptr;
     }
 
 private:
@@ -96,7 +101,8 @@ public:
 
 private:
     void add(T new_data, Node *&parent);  // Add new data to a specific subtree
-    Node* search_node_return_pointer(T data, Node *parent);  // Search for a node with specific value and return a pointer to it
+    Node* search_node_return_pointer(T data);  // Search for a node with specific value and return a pointer to it
+std::pair<BinarySearchTree<T>::Node*, BinarySearchTree<T>::Node*> search_node_return_parent_and_pointer(T data, Node *root, Node *parent);  // Search for a node, return (parent_pointer, node_pointer). ALWAYS CALL WITH parent = NULLPTR!!!
 
     Node *root = nullptr;
 };
@@ -137,44 +143,67 @@ void BinarySearchTree<T>::add(T new_data, Node *&parent)
 template <typename T>
 bool BinarySearchTree<T>::search(T data)
 {
-    return (this->search_node_return_pointer(data, this->root) != nullptr);
+    return (this->search_node_return_pointer(data) != nullptr);
 }
 
 template <typename T>
 void BinarySearchTree<T>::delete_node(T data)
 {
-    Node *node_to_delete = this->search_node_return_pointer(data, this->root);
-    if (node_to_delete == nullptr)
+    std::pair<Node*, Node*> node_pair = this->search_node_return_parent_and_pointer(data, this->root, nullptr);
+
+    Node* parent_node = node_pair.first;
+    Node* node_to_delete = node_pair.second;
+
+    if (parent_node == nullptr && node_to_delete == nullptr)  // if did not find this node
         return;
 
     // if is a leaf node
     if (node_to_delete->left == nullptr && node_to_delete->right == nullptr)
     {
         // delete this node (free the memory, set a pointer to it in parent to nullptr)
+        if (parent_node->left == node_to_delete)
+            parent_node->left = nullptr;
+        else if (parent_node->right == node_to_delete)
+            parent_node->right = nullptr;
+        delete node_to_delete;
     }
     // else (if it has children)
+    else
+    {
         // traverse over this subtree, adding every child's value to a std::vector<T>
         // delete this node (free the memory for it and all of its children, set a pointer to it in parent to nullptr)
         // call this->add for every of children' values (they are in std::vector<T>)
+    }
 }
 
 template <typename T>
-typename BinarySearchTree<T>::Node* BinarySearchTree<T>::search_node_return_pointer(T data, Node *parent)
+typename BinarySearchTree<T>::Node* BinarySearchTree<T>::search_node_return_pointer(T data)
 {
-    if (parent->data == data)
-        return parent;
-
-    if (parent->data > data)
+    for (auto it = this->begin(), end = this->end(); it != end; ++it)
     {
-        if (parent->left == nullptr)
-            return nullptr;
-        return this->search_node_return_pointer(data, parent->left);
+        if ((*it).data == data)
+            return it.get_pointer();
     }
-    else  // parent->data <= data
+    return nullptr;
+}
+
+template <typename T>
+std::pair<BinarySearchTree<T>::Node*, BinarySearchTree<T>::Node*> BinarySearchTree<T>::search_node_return_parent_and_pointer(T data, Node *root, Node *parent)
+{
+    if (root->data == data)
+        return std::pair<BinarySearchTree<T>::Node*, BinarySearchTree<T>::Node*> {parent, root};
+
+    if (root->data > data)
     {
-        if (parent->right == nullptr)
-            return nullptr;
-        return this->search_node_return_pointer(data, parent->right);
+        if (root->left == nullptr)
+            return std::pair<BinarySearchTree<T>::Node*, BinarySearchTree<T>::Node*> {nullptr, nullptr};
+        return this->search_node_return_parent_and_pointer(data, root->left, root);
+    }
+    else  // root->data <= data
+    {
+        if (root->right == nullptr)
+            return std::pair<BinarySearchTree<T>::Node*, BinarySearchTree<T>::Node*> {nullptr, nullptr};
+        return this->search_node_return_parent_and_pointer(data, root->right, root);
     }
 }
 
